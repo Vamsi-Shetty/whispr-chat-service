@@ -6,16 +6,16 @@ const httpServer = app.listen(8080)
 
 const wss = new WebSocketServer({ server: httpServer });
 
-wss.on('connection', function connection(ws) {
-  ws.on('error', console.error);
+wss.on("connection", (socket) => {
+  console.log("Client connected");
 
-  ws.on('message', function message(data, isBinary) {
-    wss.clients.forEach(function each(client) {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(data, { binary: isBinary });
-      }
-    });
+  socket.on("message", (msg) => {
+    console.log("Message:", msg.toString());
+    socket.send("Echo: " + msg);
   });
+});
 
-  ws.send('Hello! Message From Server!!');
+app.listen(4000, () => {
+  console.log("HTTP:  http://localhost:4000");
+  console.log("WS:    ws://localhost:4000");
 });
