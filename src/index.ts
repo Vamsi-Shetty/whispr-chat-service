@@ -1,21 +1,27 @@
-import express from 'express'
-import { WebSocketServer, WebSocket } from 'ws'
+import express from "express";
+import http from "http";
+import { WebSocketServer } from "ws";
 
-const app = express()
-const httpServer = app.listen(8080)
+const app = express();
 
-const wss = new WebSocketServer({ server: httpServer });
+const server = http.createServer(app);
+
+const wss = new WebSocketServer({ server });
 
 wss.on("connection", (socket) => {
   console.log("Client connected");
 
   socket.on("message", (msg) => {
     console.log("Message:", msg.toString());
-    socket.send("Echo: " + msg);
+    socket.send("Echo: " + msg.toString());
+  });
+
+  socket.on("close", () => {
+    console.log("Client disconnected");
   });
 });
 
-app.listen(4000, () => {
-  console.log("HTTP:  http://localhost:4000");
-  console.log("WS:    ws://localhost:4000");
+server.listen(4000, () => {
+  console.log("HTTP: http://localhost:4000");
+  console.log("WS:   ws://localhost:4000");
 });
